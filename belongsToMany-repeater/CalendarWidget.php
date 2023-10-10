@@ -4,11 +4,13 @@ namespace App\Filament\Resources\TherapieResource\Widgets;
 
 use App\Models\Event;
 use App\Models\User;
+use App\Repositories\EventRepository;
 use DateTime;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\View;
 use Illuminate\Support\Carbon;
 use Saade\FilamentFullCalendar\Actions\CreateAction;
 use Saade\FilamentFullCalendar\Actions\DeleteAction;
@@ -73,6 +75,7 @@ class CalendarWidget extends FullCalendarWidget
     public function getFormSchema(): array
     {
         return [
+            View::make('forms.components.title-event'),
             DateTimePicker::make('start')
                 ->label('Début')
                 ->default(now())
@@ -84,21 +87,21 @@ class CalendarWidget extends FullCalendarWidget
                 ->seconds(false)
                 ->required(),
             Repeater::make('reservations')
-                ->relationship('reservations')
+                ->relationship()
                 ->schema([
                     Select::make('student_id')
                         ->label('Participant')
                         ->required()
-                        ->relationship('students', 'name')
+                        ->relationship('student', 'name')
                         ->options(User::all()->sortBy('name')->pluck('name', 'id'))
                         ->searchable()
                         ->default(null),
                     Toggle::make('has_participated')
                         ->label('A participé'),
                     Toggle::make('is_paid')
-                        ->label('Est payé'),
+                        ->label('Payé'),
                 ])
-                ->columns(3)
+                ->columns(1)
         ];
     }
 }
